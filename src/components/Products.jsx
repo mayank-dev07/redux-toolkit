@@ -8,11 +8,16 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { add } from "../store/cartSlice";
+import { ToastContainer, toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Products() {
   const dispatch = useDispatch();
   const [product, setproduct] = useState([]);
+  const exist = useSelector((state) => state.cart);
 
   useEffect(() => {
     axios
@@ -26,12 +31,22 @@ export default function Products() {
       });
   }, []);
 
+  const notify = () =>
+    toast("Product already added to cart!", {
+      type: "info",
+    });
+
   const addToCart = (product) => {
-    dispatch(add(product));
+    if (exist.includes(product)) {
+      notify();
+    } else {
+      dispatch(add(product));
+    }
   };
 
   return (
     <>
+      <ToastContainer />
       <div className="w-full mt-5 flex">
         <div className="flex flex-wrap px-5 py-20 ms-3 justify-center">
           {product.map((items) => (
